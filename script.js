@@ -11,9 +11,7 @@ async function getData(url) {
 
     try {
         const covidData = await getData(dataUrl);
-        console.log(covidData)
         const selectedData = selectData(Object.values(covidData));
-        console.log(selectedData)
     } catch (e) {
         console.error(e.message);
     }
@@ -21,16 +19,12 @@ async function getData(url) {
 
 
 function selectData(data) {
-    let deaths = [];
-    console.log(deaths)
     let regex = new RegExp('^(0[0-9]|1[0-9])|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0-9]|7[0-2]$')
-
     const filtredData = data.filter(item => {
         const deaths = regex.test(item.All.life_expectancy);
         return deaths;
     })
     average(filtredData);
-
 }
 
 function average(filteredData) {
