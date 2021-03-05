@@ -11,7 +11,7 @@ async function getData(url) {
 
     try {
         const covidData = await getData(dataUrl);
-        const selectedData = selectData(Object.values(covidData));
+        selectData(Object.values(covidData));
     } catch (e) {
         console.error(e.message);
     }
@@ -19,10 +19,8 @@ async function getData(url) {
 
 
 function selectData(data) {
-    let regex = new RegExp('^(0[0-9]|1[0-9])|2[0-9]|3[0-9]|4[0-9]|5[0-9]|6[0-9]|7[0-2]$')
     const filtredData = data.filter(item => {
-        const deaths = regex.test(item.All.life_expectancy);
-        return deaths;
+        return Number.parseFloat(item.All.life_expectancy) <= 72;
     })
     average(filtredData);
 }
@@ -33,17 +31,21 @@ function average(filteredData) {
         let sum = 0;
         const data = Object.values(dates)
         data.forEach(element => sum += element)
-        sum = Math.round(sum / 30);
-        const country = element.All.country;
-        const continent = element.All.continent;
-        const capital = element.All.capital_city;
-        const life_expectancy = element.All.life_expectancy;
-        renderValue(sum, country, continent, capital, life_expectancy)
+
+        const country = {
+            deaths_average: Math.round(sum / 30),
+            country: element.All.country,
+            continent: element.All.continent,
+            capital: element.All.capital_city,
+            life_expectancy: element.All.life_expectancy
+        }
+
+        renderValue(country);
     })
 }
 
-function renderValue(sum, country, continent, capital, life_expectancy) {
+function renderValue(country) {
     const element = document.createElement("p");
-    element.innerHTML = `${country} ${continent} ${life_expectancy} ${capital} ${sum}`;
+    element.innerHTML = `${country.country} ${country.continent} ${country.life_expectancy} ${country.capital} ${country.deaths_average}`;
     document.body.appendChild(element);
 }
